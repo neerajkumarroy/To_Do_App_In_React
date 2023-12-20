@@ -9,11 +9,13 @@ const ToDoList = (props) => {
     };
 
     const handleSaveClick = () => {
+        // Save the edited text and exit edit mode
         props.onEdit(props.id, editedText);
         setEditing(false);
     };
 
     const handleCancelClick = () => {
+        // Cancel the editing and revert to the original text
         setEditing(false);
         setEditedText(props.text);
     };
@@ -26,9 +28,9 @@ const ToDoList = (props) => {
                         <input
                             type="text"
                             value={editedText}
-                            onChange={(e) => setEditedText(e.target.value, "Are you Sure Update this product")}
+                            onChange={(e) => setEditedText(e.target.value)}
                         />
-                        <button className='updatebtn' onClick={handleSaveClick}>Update</button>
+                        <button onClick={handleSaveClick}>Save</button>
                         <button onClick={handleCancelClick}>Cancel</button>
                     </>
                 ) : (

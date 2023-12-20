@@ -1,30 +1,39 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ToDoList from './ToDoList';
 
 const Todo = () => {
-    const [inputList, setInpuLtist] = useState("");
-    const [Items, setItems] = useState([]);
+    const [inputList, setInputList] = useState("");
+    const [items, setItems] = useState([]);
+    const [editingIndex, setEditingIndex] = useState(null);
 
     const itemEvent = (event) => {
-        setInpuLtist(event.target.value)
-    }
-
-    const listOfitems = () => {
-        setItems((oldItems) => {
-            return [...oldItems, inputList];
-        });
-        setInpuLtist(" ")
-
+        setInputList(event.target.value);
     };
 
-    const  deleteItems = (id)=>{
-        console.log("deleted")
+    const listOfItems = () => {
+        if (editingIndex !== null) {
+            // Update the existing item
+            const updatedItems = items.map((item, index) =>
+                index === editingIndex ? inputList : item
+            );
+            setItems(updatedItems);
+            setEditingIndex(null);
+        } else {
+            // Add a new item
+            setItems((oldItems) => [...oldItems, inputList]);
+        }
 
-        setItems((oldItems) => {
-            return oldItems.filter((arrElem, index) =>{
-                return index !==id;
-             })
-        })
+        setInputList("");
+    };
+
+    const deleteItems = (id) => {
+        setItems((oldItems) => oldItems.filter((_, index) => index !== id));
+        setEditingIndex(null);
+    };
+
+    const editItem = (id) => {
+        setInputList(items[id]);
+        setEditingIndex(id);
     };
 
     return (
@@ -34,25 +43,32 @@ const Todo = () => {
                     <br />
                     <h1>ToDo List</h1>
                     <br />
-                    <input className='input' type='search' placeholder='Add a item' value={inputList} onChange={itemEvent} ></input>
-                    <button className='button' onClick={listOfitems}> + </button>
+                    <input
+                        className='input'
+                        type='search'
+                        placeholder='Add an item'
+                        value={inputList}
+                        onChange={itemEvent}
+                    />
+                    <button className='button' onClick={listOfItems}>
+                        {editingIndex !== null ? 'Update' : '+'}
+                    </button>
 
                     <ol>
-                        {
-                            Items.map((itemvalue,index) => {
-                               return <ToDoList key={index} 
-                               id={index} 
-                               text = {itemvalue}
-                               onSelect={deleteItems}
-                               />;
-                            })
-                        }
-
+                        {items.map((item, index) => (
+                            <ToDoList
+                                key={index}
+                                id={index}
+                                text={item}
+                                onSelect={deleteItems}
+                                onEdit={editItem}
+                            />
+                        ))}
                     </ol>
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
 export default Todo;
